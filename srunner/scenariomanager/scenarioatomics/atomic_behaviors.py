@@ -1981,8 +1981,9 @@ class BasicAgentBehavior(AtomicBehavior):
         if self._plan:
             self._agent.set_global_plan(self._plan)
         elif self._target_location:
-            self._plan = self._agent.set_destination(
-                self._target_location, CarlaDataProvider.get_location(self._actor))
+            init_wp = self._map.get_waypoint(CarlaDataProvider.get_location(self._actor))
+            end_wp = self._map.get_waypoint(self._target_location)
+            self._plan = self._agent.trace_route(init_wp, end_wp)
             self._agent.set_global_plan(self._plan)
 
     def update(self):
@@ -2629,8 +2630,7 @@ class ActorTransformSetter(AtomicBehavior):
             new_status = py_trees.common.Status.FAILURE
 
         if calculate_distance(self._actor.get_location(), self._transform.location) < 1.0:
-            if self._physics:
-                self._actor.set_simulate_physics(enabled=True)
+            self._actor.set_simulate_physics(self._physics)
             new_status = py_trees.common.Status.SUCCESS
 
         return new_status
@@ -2830,13 +2830,14 @@ class ActorFlow(AtomicBehavior):
 
         actor.set_autopilot(True)
         self._tm.set_path(actor, [self._source_transform.location, self._sink_location])
+        self._tm.auto_lane_change(actor, False)
+        self._tm.set_desired_speed(actor, 3.6 * self._speed)
+        self._tm.update_vehicle_lights(actor, True)
 
         if self._is_constant_velocity_active:
             self._tm.ignore_vehicles_percentage(actor, 100)
-            self._tm.auto_lane_change(actor, False)
-            self._tm.set_desired_speed(actor, 3.6 * self._speed)
-            self._tm.update_vehicle_lights(actor, True)
             actor.enable_constant_velocity(carla.Vector3D(self._speed, 0, 0))  # For when physics are active
+
         self._actor_list.append(actor)
         self._spawn_dist = self._rng.uniform(self._min_spawn_dist, self._max_spawn_dist)
 
@@ -2910,7 +2911,6 @@ class BicycleFlow(AtomicBehavior):
         """
         super().__init__(name)
         self._rng = CarlaDataProvider.get_random_seed()
-        self._world = CarlaDataProvider.get_world()
 
         self._plan = plan
         self._sink_dist = sink_dist
@@ -2969,7 +2969,7 @@ class BicycleFlow(AtomicBehavior):
                 actor.destroy()
                 self._actor_data.remove(actor_data)
             else:
-                controller.run_step()
+                actor.apply_control(controller.run_step())
 
         # Spawn new actors if needed
         if len(self._actor_data) == 0:
