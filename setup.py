@@ -21,5 +21,9 @@ setup(
     version="0.9.13",
     long_description=long_description,
     install_requires=requirements,
+    package_data={
+        'srunner': ['*/*.xsd']
+    },
+    include_package_data=True,
     packages=find_packages()
 )
