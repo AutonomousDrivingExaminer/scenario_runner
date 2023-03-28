@@ -2904,6 +2904,8 @@ class ActorFlow(AtomicBehavior):
         self._actor_list = []
         self._collision_sensor_list = []
 
+        self._terminated = False
+
     def initialise(self):
         if self._initial_actors:
             grp = CarlaDataProvider.get_global_route_planner()
@@ -2987,11 +2989,10 @@ class ActorFlow(AtomicBehavior):
         """
         Default terminate. Can be extended in derived class
         """
-        for actor in self._actor_list:
-            try:
-                actor.destroy()
-            except RuntimeError:
-                pass  # Actor was already destroyed
+        if self._terminated:
+            return
+
+        self._terminated = True
 
         for sensor in self._collision_sensor_list:
             if sensor is None:
@@ -2999,6 +3000,18 @@ class ActorFlow(AtomicBehavior):
             try:
                 sensor.stop()
                 sensor.destroy()
+            except RuntimeError:
+                pass  # Actor was already destroyed
+
+        for actor in self._actor_list:
+            # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
+            # Patched by removing its movement
+            actor.disable_constant_velocity()
+            actor.set_autopilot(False)
+            actor.set_target_velocity(carla.Vector3D(0,0,0))
+            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
+            try:
+                actor.destroy()
             except RuntimeError:
                 pass  # Actor was already destroyed
 
@@ -3045,6 +3058,8 @@ class OppositeActorFlow(AtomicBehavior):
         self._actor_list = []
         self._grp = CarlaDataProvider.get_global_route_planner()
         self._map = CarlaDataProvider.get_map()
+
+        self._terminated = False
 
     def _move_waypoint_forward(self, wp, distance):
         """Moves forward a certain distance, stopping at junctions"""
@@ -3132,7 +3147,18 @@ class OppositeActorFlow(AtomicBehavior):
         """
         Default terminate. Can be extended in derived class
         """
+        if self._terminated:
+            return
+
+        self._terminated = True
+
         for actor, _ in self._actor_list:
+            # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
+            # Patched by removing its movement
+            actor.disable_constant_velocity()
+            actor.set_autopilot(False)
+            actor.set_target_velocity(carla.Vector3D(0,0,0))
+            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
                 actor.destroy()
             except RuntimeError:
@@ -3186,6 +3212,8 @@ class InvadingActorFlow(AtomicBehavior):
         self._grp = CarlaDataProvider.get_global_route_planner()
         self._map = CarlaDataProvider.get_map()
 
+        self._terminated = False
+
     def initialise(self):
         """Get the actor flow source and sink, depending on the reference actor speed"""
         self._speed = self._reference_actor.get_speed_limit()  # Km / h
@@ -3234,7 +3262,18 @@ class InvadingActorFlow(AtomicBehavior):
         """
         Default terminate. Can be extended in derived class
         """
+        if self._terminated:
+            return
+
+        self._terminated = True
+
         for actor, _ in self._actor_list:
+            # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
+            # Patched by removing its movement
+            actor.disable_constant_velocity()
+            actor.set_autopilot(False)
+            actor.set_target_velocity(carla.Vector3D(0,0,0))
+            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
                 actor.destroy()
             except RuntimeError:
@@ -3281,6 +3320,8 @@ class BicycleFlow(AtomicBehavior):
 
         self._actor_data = []
         self._grp = CarlaDataProvider.get_global_route_planner()
+
+        self._terminated = False
 
     def initialise(self):
         if self._initial_actors:
@@ -3364,7 +3405,18 @@ class BicycleFlow(AtomicBehavior):
         """
         Default terminate. Can be extended in derived class
         """
+        if self._terminated:
+            return
+
+        self._terminated = True
+
         for actor, _ in self._actor_data:
+            # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
+            # Patched by removing its movement
+            actor.disable_constant_velocity()
+            actor.set_autopilot(False)
+            actor.set_target_velocity(carla.Vector3D(0,0,0))
+            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
                 actor.destroy()
             except RuntimeError:
