@@ -1,5 +1,5 @@
 py-trees==0.8.3
-networkx==2.2
+networkx==3.0
 Shapely==1.7.1
 psutil
 xmlschema==1.0.18
