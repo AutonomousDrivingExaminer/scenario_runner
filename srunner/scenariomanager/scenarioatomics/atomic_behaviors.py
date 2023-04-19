@@ -2929,7 +2929,7 @@ class ActorFlow(AtomicBehavior):
         if actor is None:
             return py_trees.common.Status.RUNNING
 
-        actor.set_autopilot(True)
+        actor.set_autopilot(True, CarlaDataProvider.get_traffic_manager_port())
         self._tm.set_path(actor, [self._sink_location])
         self._tm.auto_lane_change(actor, False)
         self._tm.set_desired_speed(actor, 3.6 * self._speed)
@@ -3007,7 +3007,7 @@ class ActorFlow(AtomicBehavior):
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
             actor.disable_constant_velocity()
-            actor.set_autopilot(False)
+            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
             actor.set_target_velocity(carla.Vector3D(0,0,0))
             actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
@@ -3156,7 +3156,7 @@ class OppositeActorFlow(AtomicBehavior):
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
             actor.disable_constant_velocity()
-            actor.set_autopilot(False)
+            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
             actor.set_target_velocity(carla.Vector3D(0,0,0))
             actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
@@ -3271,7 +3271,7 @@ class InvadingActorFlow(AtomicBehavior):
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
             actor.disable_constant_velocity()
-            actor.set_autopilot(False)
+            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
             actor.set_target_velocity(carla.Vector3D(0,0,0))
             actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
@@ -3414,7 +3414,7 @@ class BicycleFlow(AtomicBehavior):
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
             actor.disable_constant_velocity()
-            actor.set_autopilot(False)
+            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
             actor.set_target_velocity(carla.Vector3D(0,0,0))
             actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
