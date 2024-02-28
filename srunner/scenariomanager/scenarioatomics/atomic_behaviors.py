@@ -2986,8 +2986,11 @@ class ActorFlow(AtomicBehavior):
         """Stops the constant velocity behavior"""
         self._is_constant_velocity_active = False
         for actor in self._actor_list:
-            actor.disable_constant_velocity()
-            self._tm.ignore_vehicles_percentage(actor, 0)
+            try:
+                actor.disable_constant_velocity()
+                self._tm.ignore_vehicles_percentage(actor, 0)
+            except RuntimeError:
+                pass
 
     def terminate(self, new_status):
         """
@@ -3010,11 +3013,11 @@ class ActorFlow(AtomicBehavior):
         for actor in self._actor_list:
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
-            actor.disable_constant_velocity()
-            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
-            actor.set_target_velocity(carla.Vector3D(0,0,0))
-            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
+                actor.disable_constant_velocity()
+                actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
+                actor.set_target_velocity(carla.Vector3D(0,0,0))
+                actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
                 actor.destroy()
             except RuntimeError:
                 pass  # Actor was already destroyed
@@ -3159,11 +3162,11 @@ class OppositeActorFlow(AtomicBehavior):
         for actor, _ in self._actor_list:
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
-            actor.disable_constant_velocity()
-            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
-            actor.set_target_velocity(carla.Vector3D(0,0,0))
-            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
+                actor.disable_constant_velocity()
+                actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
+                actor.set_target_velocity(carla.Vector3D(0,0,0))
+                actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
                 actor.destroy()
             except RuntimeError:
                 pass  # Actor was already destroyed
@@ -3274,11 +3277,11 @@ class InvadingActorFlow(AtomicBehavior):
         for actor, _ in self._actor_list:
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
-            actor.disable_constant_velocity()
-            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
-            actor.set_target_velocity(carla.Vector3D(0,0,0))
-            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
+                actor.disable_constant_velocity()
+                actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
+                actor.set_target_velocity(carla.Vector3D(0,0,0))
+                actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
                 actor.destroy()
             except RuntimeError:
                 pass  # Actor was already destroyed
@@ -3417,11 +3420,11 @@ class BicycleFlow(AtomicBehavior):
         for actor, _ in self._actor_data:
             # TODO: Actors spawned in the same frame as the behavior termination won't be removed.
             # Patched by removing its movement
-            actor.disable_constant_velocity()
-            actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
-            actor.set_target_velocity(carla.Vector3D(0,0,0))
-            actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
             try:
+                actor.disable_constant_velocity()
+                actor.set_autopilot(False, CarlaDataProvider.get_traffic_manager_port())
+                actor.set_target_velocity(carla.Vector3D(0,0,0))
+                actor.set_target_angular_velocity(carla.Vector3D(0,0,0))
                 actor.destroy()
             except RuntimeError:
                 pass  # Actor was already destroyed
